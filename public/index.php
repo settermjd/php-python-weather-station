@@ -23,19 +23,33 @@ $container->set(
     'database',
     fn($c) => new PDO(sprintf('sqlite:%s', __DIR__ . '/../data/database/weather_station.sqlite'))
 );
-$container->set('weatherData', function(\Psr\Container\ContainerInterface $container) {
-    return $container->get('database')->query(
-        "SELECT temperature, humidity, Timestamp FROM weather_data ORDER BY timestamp DESC",
-        PDO::FETCH_ASSOC
-    );
-});
 
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->add(TwigMiddleware::createFromContainer($app));
 
 $app->map(['GET'], '/', function (Request $request, Response $response, array $args) {
-    $weatherData = $this->get('weatherData');
+    /** @var PDO $dbh */
+    $dbh = $this->get('database');
+
+    if (isset($request->getQueryParams()['date'])) {
+        $statement = $dbh->prepare('SELECT temperature, humidity, date(timestamp) as date, time(timestamp) as time 
+            FROM weather_data 
+            WHERE date(timestamp ) = :date
+            ORDER BY timestamp DESC;'
+        );
+        $statement->bindParam(':date', $request->getQueryParams()['date'], PDO::PARAM_STR);
+        $statement->execute();
+        $weatherData = $statement->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $weatherData = $dbh->query(
+            'SELECT temperature, humidity, date(timestamp) as date, time(timestamp) as time 
+            FROM weather_data 
+            ORDER BY timestamp DESC;',
+            PDO::FETCH_ASSOC
+        );
+    }
+
     return $this->get('view')->render(
         $response,
         'index.html.twig',

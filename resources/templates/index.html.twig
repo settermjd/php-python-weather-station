@@ -7,13 +7,20 @@
     <title>PHP &amp; Python Weather Station</title>
 </head>
 <body>
-<h1 class="mb-0">PHP &amp; Python Weather Station</h1>
-<p class="lead">A small application to help you keep up with the weather.</p>
+<h1 class="mb-4">Wetter Station</h1>
+<div class="w-full mb-4 rounded-lg border-2 border-slate-200 bg-white p-6 pl-4 pr-6">
+    <form class="w-full grid grid-cols-2 gap-2">
+        <label for="date" class="w-full"><input type="date" id="date" name="date" class="border-2 border-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 font-semibold h-12 px-6 rounded-lg w-full text-center"/></label>
+        <input type="submit" class="bg-slate-900 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 text-white font-semibold h-12 px-6 rounded-lg w-full sm:w-auto dark:bg-sky-500 dark:highlight-white/20 dark:hover:bg-sky-400 hover:drop-shadow-md" value="Süche"
+        >
+    </form>
+</div>
 <div>
     <table class="table-auto border-collapse border border-slate-400 w-full rounded-lg">
         <thead>
         <tr>
-            <th class="p-2 text-left border border-slate-300">Date/Time</th>
+            <th class="p-2 text-left border border-slate-300">Date</th>
+            <th class="p-2 text-left border border-slate-300">Time</th>
             <th class="p-2 text-left border border-slate-300">Temperature (&deg;C)</th>
             <th class="p-2 text-left border border-slate-300">Humidity (%)</th>
         </tr>
@@ -21,7 +28,8 @@
         <tbody>
         {% for item in items %}
             <tr>
-                <td class="p-2 border border-slate-300">{{ item.timestamp|format_datetime(locale='de') }}</td>
+                <td class="p-2 border border-slate-300">{{ item.date|format_date(locale='de') }}</td>
+                <td class="p-2 border border-slate-300">{{ item.time|format_time(pattern='hh:mm', locale='de') }}</td>
                 <td class="p-2 border border-slate-300">{{ item.temperature|format_number({rounding_mode: 'floor', fraction_digit: 2}, locale='de') }}</td>
                 <td class="p-2 border border-slate-300">{{ item.humidity|format_number({rounding_mode: 'floor', fraction_digit: 2}, locale='de') }}</td>
             </tr>
