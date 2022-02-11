@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/css/styles.css" rel="stylesheet">
+    <title>PHP &amp; Python Weather Station</title>
+</head>
+<body>
+<h1 class="mb-0">PHP &amp; Python Weather Station</h1>
+<p class="lead">A small application to help you keep up with the weather.</p>
+<div>
+    <table class="table-auto border-collapse border border-slate-400 w-full rounded-lg">
+        <thead>
+        <tr>
+            <th class="p-2 text-left border border-slate-300">Date/Time</th>
+            <th class="p-2 text-left border border-slate-300">Temperature (&deg;C)</th>
+            <th class="p-2 text-left border border-slate-300">Humidity (%)</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in items %}
+            <tr>
+                <td class="p-2 border border-slate-300">{{ item.timestamp|format_datetime(locale='de') }}</td>
+                <td class="p-2 border border-slate-300">{{ item.temperature|format_number({rounding_mode: 'floor', fraction_digit: 2}, locale='de') }}</td>
+                <td class="p-2 border border-slate-300">{{ item.humidity|format_number({rounding_mode: 'floor', fraction_digit: 2}, locale='de') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<footer>
+    <p>&copy; {{ now|date('Y') }}, Matthew Setter.</p>
+</footer>
+</body>
+</html>
