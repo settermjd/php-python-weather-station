@@ -33,6 +33,6 @@ pin = 17
 humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
 if humidity is not None and temperature is not None:
-    connection = create_connection('./weather_station.sqlite')
+    connection = create_connection('./data/database/weather_station.sqlite')
     add_weather_data = f"INSERT INTO weather_data (temperature, humidity) VALUES ({round(temperature,2)}, {round(humidity,2)});"
     execute_query(connection, add_weather_data)
