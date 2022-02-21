@@ -1,10 +1,12 @@
 {
   "require": {
+    "ext-pdo": "*",
     "php-di/php-di": "^6.3",
     "slim/psr7": "^1.5",
     "slim/slim": "^4.9",
     "slim/twig-view": "^3.3",
-    "twig/intl-extra": "^3.3"
+    "twig/intl-extra": "^3.3",
+    "laminas/laminas-db": "^2.13"
   },
   "autoload": {
     "psr-4": {
