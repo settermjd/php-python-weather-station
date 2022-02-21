@@ -1,7 +1,9 @@
 import Adafruit_DHT
-import sqlite3
+import os
 import random
+import sqlite3
 import time
+
 from sqlite3 import Error
 
 def create_connection(path):
@@ -14,6 +16,7 @@ def create_connection(path):
 
     return connection
 
+
 def execute_query(connection, query):
     cursor = connection.cursor()
     try:
@@ -23,16 +26,13 @@ def execute_query(connection, query):
     except Error as e:
         print(f"The error '{e}' occurred")
 
-# Use the DHT11 temperature and humidity sensor
-sensor = Adafruit_DHT.DHT11
+gpio_pin = 17
+database_file = 'data/database/weather_station.sqlite'
 
-# The sensor is connected to GPIO 17
-pin = 17
-
-# Attempt to read in the humidity and temperature from the sensor
-humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+humidity, temperature = Adafruit_DHT.read_retry(database_file, gpio_pin)
 
 if humidity is not None and temperature is not None:
     connection = create_connection('./data/database/weather_station.sqlite')
-    add_weather_data = f"INSERT INTO weather_data (temperature, humidity) VALUES ({round(temperature,2)}, {round(humidity,2)});"
+    add_weather_data = (f'INSERT INTO weather_data (temperature, humidity) VALUES'
+                        '({round(temperature, 2)}, {round(humidity, 2)});')
     execute_query(connection, add_weather_data)
