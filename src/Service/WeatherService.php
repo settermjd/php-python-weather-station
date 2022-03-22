@@ -19,7 +19,7 @@ class WeatherService
         $this->adapter = $adapter;
     }
 
-    public function getWeatherData(?string $forDate, ?string $endDate): ResultSetInterface
+    public function getWeatherData(?string $forDate, ?string $endDate = null): ResultSetInterface
     {
         $sql = new Sql($this->adapter, 'weather_data');
         $select = $sql

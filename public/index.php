@@ -5,6 +5,8 @@ declare(strict_types=1);
 use DI\Container;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Sql;
+use Monolog\Logger;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{
     ResponseInterface as Response,
     ServerRequestInterface as Request
@@ -16,36 +18,57 @@ use Twig\Extra\Intl\IntlExtension;
 require __DIR__ . '/../vendor/autoload.php';
 
 $container = new Container();
+
 $container->set('view', function() {
     $twig = Twig::create(__DIR__ . '/../resources/templates');
     $twig->addExtension(new IntlExtension());
     return $twig;
 });
-$container->set('weatherData', function() {
-    $dbAdapter = new Adapter([
+
+$container->set('dbAdapter', function() {
+    return new Adapter([
         'driver' => 'Pdo_Sqlite',
         'database' => __DIR__ . '/../data/database/weather_station_test_data.sqlite'
     ]);
-    $sql = new Sql($dbAdapter, 'weather_data');
-    $select = $sql
-        ->select()
-        ->columns(['temperature', 'humidity', 'timestamp']);
+});
 
-    return $dbAdapter->query(
-        $sql->buildSqlString($select),
-        $dbAdapter::QUERY_MODE_EXECUTE
+$container->set('weatherService', function(ContainerInterface $container) {
+    return new WeatherStation\Service\WeatherService(
+        $container->get('dbAdapter')
     );
+});
+
+$container->set('logger', function(ContainerInterface $container) {
+    $logger = new Monolog\Logger('logger');
+    $filename = __DIR__ . '/../data/log/error.log';
+    $stream = new Monolog\Handler\StreamHandler(
+        $filename,
+        Monolog\Logger::DEBUG
+    );
+    $logger->pushHandler($stream);
+
+    return $logger;
 });
 
 AppFactory::setContainer($container);
 $app = AppFactory::create();
 $app->add(TwigMiddleware::createFromContainer($app));
 
-$app->map(['GET'], '/', function (Request $request, Response $response, array $args) {
+$app->map(['GET'], '/[{forDate}]', function (Request $request, Response $response, array $args) {
+    /** @var WeatherStation\Service\WeatherService $weatherService */
+    $weatherService = $this->get('weatherService');
+    $forDate = $request->getAttribute('forDate');
+
+    /** @var Logger $logger */
+    $logger = $this->get('logger');
+    $logger->debug('Requested data', ['for date' => $forDate]);
+
     return $this->get('view')->render(
         $response,
         'index.html.twig',
-        ['items' => $this->get('weatherData')]
+        ['items' => $weatherService->getWeatherData($forDate)]
+    );
+});
     );
 });
 
