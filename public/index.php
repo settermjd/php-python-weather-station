@@ -5,6 +5,7 @@ declare(strict_types=1);
 use DI\Container;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Sql;
+use Laminas\Diactoros\Response\TextResponse;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{
@@ -69,6 +70,30 @@ $app->map(['GET'], '/[{forDate}]', function (Request $request, Response $respons
         ['items' => $weatherService->getWeatherData($forDate)]
     );
 });
+
+$app->map(['GET'], '/download[/{forDate}]', function (Request $request, Response $response, array $args) {
+    /** @var WeatherStation\Service\WeatherService $weatherService */
+    $weatherService = $this->get('weatherService');
+    $forDate = $request->getAttribute('forDate');
+    $weatherData = $weatherService->getWeatherData($forDate);
+    $filename = 'daily-summary';
+
+    $fp = fopen('php://memory', 'rw');
+    foreach ($weatherData->toArray() as $weatherDatum) {
+        fputcsv($fp, $weatherDatum);
+    }
+    $stream = new \Laminas\Diactoros\Stream($fp);
+
+    return new TextResponse(
+        $stream,
+        200,
+        [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename={$filename}.csv",
+            'Content-Length' => $stream->getSize(),
+            'Pragma' => 'no-cache',
+            'Expires' => 0,
+        ]
     );
 });
 
