@@ -7,7 +7,8 @@
     "slim/twig-view": "^3.3",
     "twig/intl-extra": "^3.3",
     "laminas/laminas-db": "^2.13",
-    "monolog/monolog": "^2.3"
+    "monolog/monolog": "^2.3",
+    "laminas/laminas-diactoros": "^2.8"
   },
   "autoload": {
     "psr-4": {
