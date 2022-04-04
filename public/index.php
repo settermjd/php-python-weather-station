@@ -18,6 +18,13 @@ use Twig\Extra\Intl\IntlExtension;
 
 require __DIR__ . '/../vendor/autoload.php';
 
+$dotenv = Dotenv\Dotenv::createImmutable(
+    __DIR__ . '/../',
+    '.env',
+    false
+);
+$dotenv->safeLoad();
+
 $container = new Container();
 
 $container->set('view', function() {
