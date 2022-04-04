@@ -8,6 +8,7 @@ use Laminas\Db\Sql\Sql;
 use Laminas\Diactoros\Response\TextResponse;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Http\Message\{
     ResponseInterface as Response,
     ServerRequestInterface as Request
@@ -42,12 +43,13 @@ $container->set('dbAdapter', function() {
 
 $container->set('weatherService', function(ContainerInterface $container) {
     return new WeatherStation\Service\WeatherService(
-        $container->get('dbAdapter')
+        $container->get('dbAdapter'),
+        $container->get(LoggerInterface::class)
     );
 });
 
-$container->set('logger', function(ContainerInterface $container) {
-    $logger = new Monolog\Logger('logger');
+$container->set(LoggerInterface::class, function(ContainerInterface $container): Logger {
+    $logger = new Logger('logger');
     $filename = __DIR__ . '/../data/log/error.log';
     $stream = new Monolog\Handler\StreamHandler(
         $filename,
