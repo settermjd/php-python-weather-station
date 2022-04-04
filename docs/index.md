@@ -1,6 +1,6 @@
 # Raspberry Pi Weather Station Documentation
 
-## Installation & Setup
+## Installation & setup
 
 ## Prerequisites
 
@@ -26,9 +26,9 @@ composer install
 npm install
 ```
 
-### Add Crontab Element for the Python script
+### Add Crontab record for the Python script
 
-Next, add the Python script that reads data from the sensor and inserts it in to the SQLite database. Run the command below to open the Crontab editor for the user that will run the Python script.
+Next, on the Raspberry Pi, add the Python script that reads data from the sensor and inserts it in to the SQLite database. Run the command below to open the Crontab editor for the user that will run the Python script.
 
 ```bash
 crontab -e
@@ -42,7 +42,21 @@ Then, add the following snippet to the bottom of the file, save the file, and cl
 
 **Note:** The user that runs the Python script **must** be in the `GPIO` group, otherwise it won't be able to read data from the sensor. So make sure that the user is added to that group.
 
-### Wire up the GPIO Board and Connect it to the Raspberry Pi
+### Wire up the GPIO Board and connect it to the Raspberry Pi
 
 For full instructions on wiring up the GPIO board, and setting up the Raspberry Pi - especially if this is your first time using them - step through [the tutorial that I wrote](https://www.twilio.com/blog/build-weather-station-with-php-python-raspberry-pi) for the Twilio blog.
 It contains all that you need to know.
+
+### Add the required environment variables
+
+The application needs a number of environment variables to be available. To set them, copy _.env.example_ in the top-level directory of the project as _.env_. Then, set each of the variables, and the application should work as expected.
+
+## Running the application
+
+### Sending status notifications
+
+To send a status notification, add the following command to the applicable user's Crontab on the Raspberry Pi, or run it manually, changing the dates as appropriate.
+
+```bash
+curl http://localhost/daily-summary/2022-02-11/2022-02-12
+```
