@@ -4,40 +4,71 @@ declare(strict_types=1);
 
 namespace WeatherStation\Service;
 
-use Laminas\Db\{Adapter\Adapter,
+use Laminas\Db\{
+    Adapter\Adapter,
+    ResultSet\ResultSet,
     ResultSet\ResultSetInterface,
     Sql\Predicate\Between,
     Sql\Predicate\Expression,
-    Sql\Sql};
+    Sql\Sql
+};
+use Psr\Log\LoggerInterface;
 
 class WeatherService
 {
     private Adapter $adapter;
+    private ?LoggerInterface $logger;
 
-    public function __construct(Adapter $adapter)
+    public function __construct(Adapter $adapter, ?LoggerInterface $logger = null)
     {
         $this->adapter = $adapter;
+        $this->logger = $logger;
     }
 
-    public function getWeatherData(?string $forDate, ?string $endDate = null): ResultSetInterface
+    /**
+     * @return ResultSet|ResultSetInterface
+     * @throws \Exception
+     */
+    public function getWeatherData(?string $startDate, ?string $endDate = null)
     {
         $sql = new Sql($this->adapter, 'weather_data');
         $select = $sql
             ->select()
             ->columns(['humidity', 'temperature', 'timestamp']);
 
-        if ($forDate !== null && $endDate !== null) {
-            $select->where(new Between("date(timestamp)", $forDate, $endDate));
-        } else {
-            if ($forDate !== null) {
-                $select->where(new Expression("date(timestamp) = ?", $forDate));
-            }
+        if ($startDate !== null && $endDate !== null) {
+            $select->where(
+                new Between(
+                    "timestamp",
+                    $startDate,
+                    $endDate
+                )
+            );
+        } elseif ($startDate !== null) {
+            $select->where(
+                new Expression(
+                    "timestamp = ?",
+                    $startDate
+                )
+            );
+        }
+
+        $sqlString = $sql->buildSqlString($select);
+
+        if ($this->logger !== null) {
+            $this->logger->debug(
+                $sqlString,
+                [
+                    'start date' => $startDate,
+                    'end date' => $endDate,
+                ]
+            );
         }
 
         return $this
             ->adapter
             ->query(
-                $sql->buildSqlString($select),
+                $sqlString,
                 $this->adapter::QUERY_MODE_EXECUTE
             );
     }
