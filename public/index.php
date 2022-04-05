@@ -9,6 +9,8 @@ use Laminas\Db\ResultSet\ResultSetInterface;
 use Laminas\Diactoros\Response\EmptyResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Stream;
+use Laminas\Paginator\Adapter\Iterator as PaginatorIterator;
+use Laminas\Paginator\Paginator;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -195,13 +197,12 @@ $app->get('/privacy-policy', function (Request $request, Response $response, arr
         ->render($response, 'privacy.html.twig',);
 })->setName('privacy');
 
-$app->map(['GET','POST'], '/[{startDate}[/{endDate}]]', function (Request $request, Response $response, array $args) {
+$app->map(['GET','POST'], '/[page{pageNumber:\d+}[/]]', function (Request $request, Response $response, array $args) {
     /** @var WeatherStation\Service\WeatherService $weatherService */
     $weatherService = $this->get(WeatherService::class);
     $startDate = $request->getAttribute('startDate');
     $endDate = $request->getAttribute('endDate');
-
-    //$pageNumber = $request->getAttribute('page', 1);
+    $pageNumber = $request->getAttribute('pageNumber', 1);
 
     $this->get(LoggerInterface::class)
         ->debug(
@@ -224,18 +225,17 @@ $app->map(['GET','POST'], '/[{startDate}[/{endDate}]]', function (Request $reque
         );
     }
 
-    /*$paginator = new Paginator(new PaginatorIterator($weatherData));*/
+    $paginator = new Paginator(new PaginatorIterator($weatherData));
     return $this
         ->get('view')
         ->render(
             $response,
             'index.html.twig',
             [
-                'items' => $weatherData,
-                /*'items' => $paginator->getItemsByPage($pageNumber),
+                'items' => $paginator->getItemsByPage($pageNumber),
                 'total' => 10,
                 'current' => $pageNumber,
-                'url' => 'page'*/
+                'url' => 'page'
             ]
         );
 });
