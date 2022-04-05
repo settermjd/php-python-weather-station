@@ -1,92 +1,75 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/css/styles.css" rel="stylesheet">
-    <title>DIY Weather Station</title>
-</head>
-<body>
-<h1 class="mb-2">DIY Weather Station</h1>
-<div class="text-slate-700">A small weather station built with a Raspberry Pi, PHP, Python, and Bash.</div>
-<!--
-<div class="mb-8">
-    <canvas id="myChart" width="400" height="400"></canvas>
-</div>
--->
-<div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-x-4 xl:gap-x-8 mb-8">
-    <div class="lg:col-span-2 order-2 lg:order-1">
-        <table class="drop-shadow-md">
-            <thead>
-            <tr class="hover:bg-slate-100 hover:ease-in ease-out transition duration-150">
-                <th>Date</th>
-                <th class="text-center">Time</th>
-                <th>
-                    <span class="text-center hidden xl:block">Temperature (&deg;C)</span>
-                    <span class="text-center block xl:hidden">Temp (&deg;C)</span>
-                </th>
-                <th class="text-center">Humidity</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for item in items %}
-                <tr class="hover:bg-slate-100 hover:ease-in ease-out transition duration-150">
-                    <td>
-                        <span class="hidden xl:block">{{ item.timestamp|date('l, dS M, Y') }}</span>
-                        <span class="block xl:hidden">{{ item.timestamp|date('d.m.Y') }}</span>
-                    </td>
-                    <td class="text-center">{{ item.timestamp|date('H:i') }}</td>
-                    <td class="text-center">{{ item.temperature|format_number({rounding_mode: 'floor', fraction_digit: 1}) }}&deg;</td>
-                    <td class="text-center">{{ item.humidity|format_number({rounding_mode: 'floor', fraction_digit: 0}) }}&#37;</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+{% extends "default.html.twig" %}
 
-        <div class="pagination">
-        {% from "pagination.html.twig" import pagination as pagination %}
-        {{ pagination(total, current, url) }}
+{% block content %}
+    <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-x-4 xl:gap-x-8 mb-8">
+        <div id="weather-data-listing" class="lg:col-span-2 order-2 lg:order-1">
+            <table class="drop-shadow-md">
+                <thead>
+                <tr class="hover:bg-slate-100 hover:ease-in ease-out transition duration-150">
+                    <th>Date</th>
+                    <th class="text-center">Time</th>
+                    <th>
+                        <span class="text-center hidden xl:block">Temperature (&deg;C)</span>
+                        <span class="text-center block xl:hidden">Temp (&deg;C)</span>
+                    </th>
+                    <th class="text-center">Humidity</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for item in items %}
+                    <tr class="hover:bg-slate-100 hover:ease-in ease-out transition duration-150">
+                        <td>
+                            <span class="hidden xl:block">{{ item.timestamp|date('l, dS M, Y') }}</span>
+                            <span class="block xl:hidden">{{ item.timestamp|date('d.m.Y') }}</span>
+                        </td>
+                        <td class="text-center">{{ item.timestamp|date('H:i') }}</td>
+                        <td class="text-center">{{ item.temperature|format_number({rounding_mode: 'floor', fraction_digit: 1}) }}&deg;</td>
+                        <td class="text-center">{{ item.humidity|format_number({rounding_mode: 'floor', fraction_digit: 0}) }}&#37;</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                {% from "pagination.html.twig" import pagination as pagination %}
+                {{ pagination(total, current, url) }}
+            </div>
         </div>
 
+        <div id="search-form" class="order-1 lg:order-2 mb-4 lg:mb-0">
+            <form name="download-data-form"
+                  id="download-data-form"
+                  method="post"
+                  enctype="application/x-www-form-urlencoded"
+                  class="grid grid-cols-1 mb-4 items-center w-auto rounded-lg border-2 border-slate-200 bg-white pt-2">
+                <div class="px-4 py-2 pb-2">
+                    <h2 class="sidebar">Filter the weather data</h2>
+                    <div class="text-slate-700">You can filter the weather data by a date range, or by a start or end date.</div>
+                </div>
+
+                <div class="px-4 py-2 border-b-2 border-t-2 border-slate-200 pb-4">
+                    <label for="startdate" class="text-slate-700 mb-2">
+                        Start date:<br>
+                        <input name="startdate" id="startdate" type="date"
+                               class="p-2 border-2 bg-white rounded-lg text-slate-700 col-span-2 w-full mt-2 placeholder:text-slate-300 hover:bg-slate-50 hover:ease-in ease-out transition duration-150">
+                        <span class="text-slate-400 text-sm mt-1 ml-0.5">Set only the start date to limit the earliest record displayed.</span>
+                    </label>
+                </div>
+
+                <div class="px-4 py-2 pb-2">
+                    <label for="enddate" class="text-slate-700 mb-2">
+                        End date:<br>
+                        <input name="enddate" id="enddate" type="date"
+                               class="p-2 border-2 bg-white rounded-lg text-slate-700 col-span-2 w-full mt-1 hover:bg-slate-50 placeholder:text--slate-300 hover:ease-in ease-out transition duration-150">
+                        <span class="text-slate-400 text-sm mt-1 ml-0.5">Set only the start date to limit the latest record displayed.</span>
+                    </label>
+                </div>
+
+                <div class="bg-gray-100 border-t-2 border-t-slate-200 px-4 py-2">
+                    <input type="submit" name="submit" value="Search" class="submit hover:cursor-pointer hover:ease-in ease-out transition duration-150">
+                    <input type="reset" name="reset" class="reset ml-1 hover:cursor-pointer hover:ease-in ease-out transition duration-150">
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="order-1 lg:order-2 mb-4 lg:mb-0">
-        <form name="download-data-form"
-              id="download-data-form"
-              method="post"
-              enctype="application/x-www-form-urlencoded"
-              class="grid grid-cols-1 mb-4 items-center w-auto rounded-lg border-2 border-slate-200 bg-white pt-2">
-            <div class="px-4 py-2 pb-2">
-                <h2 class="text-2xl font-bold mt-0 mb-2">Filter the weather data</h2>
-                <div class="text-slate-700">You can filter the weather data by a date range, or by a start or end date.</div>
-            </div>
-
-            <div class="px-4 py-2 border-b-2 border-t-2 border-slate-200 pb-4">
-                <label for="startdate" class="text-slate-700 mb-2">
-                    Start date:<br>
-                    <input name="startdate" id="startdate" type="date"
-                           class="p-2 border-2 bg-white rounded-lg text-slate-700 col-span-2 w-full mt-2 placeholder:text-slate-300 hover:bg-slate-50 hover:ease-in ease-out transition duration-150">
-                    <span class="text-slate-400 text-sm mt-1 ml-0.5">Set only the start date to limit the earliest record displayed.</span>
-                </label>
-            </div>
-
-            <div class="px-4 py-2 pb-2">
-                <label for="enddate" class="text-slate-700 mb-2">
-                    End date:<br>
-                    <input name="enddate" id="enddate" type="date"
-                           class="p-2 border-2 bg-white rounded-lg text-slate-700 col-span-2 w-full mt-1 hover:bg-slate-50 placeholder:text--slate-300 hover:ease-in ease-out transition duration-150">
-                    <span class="text-slate-400 text-sm mt-1 ml-0.5">Set only the start date to limit the latest record displayed.</span>
-                </label>
-            </div>
-
-            <div class="bg-gray-100 border-t-2 border-t-slate-200 px-4 py-2">
-                <input type="submit" name="submit" value="Search" class="submit hover:cursor-pointer hover:ease-in ease-out transition duration-150">
-                <input type="reset" name="reset" class="reset ml-1 hover:cursor-pointer hover:ease-in ease-out transition duration-150">
-            </div>
-        </form>
-    </div>
-</div>
-<footer>
-    <p>&copy; {{ now|date('Y') }}, Matthew Setter.</p>
-</footer>
-</body>
-</html>
+{% endblock %}

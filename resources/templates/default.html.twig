@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    {% block head %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="/css/styles.css" rel="stylesheet">
+        <title>{% block title %} {% endblock %}DIY Weather Station</title>
+    {% endblock %}
+</head>
+<body>
+<h1 class="mb-2"><a href="/" class="no-underline underline-offset-4 decoration-stone-700 hover:underline hover:ease-in ease-out transition duration-150" title="home">DIY Weather Station</a>{% block mainheader %}{% endblock %}</h1>
+<div class="text-slate-700">A small weather station built with a Raspberry Pi, PHP, Python, and Bash.</div>
+    {% block content %}{% endblock %}
+<footer>
+    <p class="mb-2 pt-0 mt-0">
+        &copy; {{ now|date('Y') }}, Twilio /
+        Built by <a href="https://matthewsetter.com" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Matthew Setter</a>
+    </p>
+    <p class="mb-2">
+        <a href="/about" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">About the project</a> /
+        <a href="https://github.com/settermjd/php-python-weather-station" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Contribute to the project</a> /
+        <a href="https://www.twilio.com/blog/build-weather-station-with-php-python-raspberry-pi" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Read the tutorial series</a>
+    </p>
+    <p class="mb-2">
+        <strong>The legals:</strong>
+        <a href="/disclaimer" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Disclaimer</a> /
+        <a href="/privacy-policy" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Privacy Policy</a> /
+        <a href="/cookie-policy" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Cookie Policy</a> /
+        <a href="/impressum" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Impressum</a> /
+        <a href="/datenschutzerklaerung" class="underline-offset-4 decoration-stone-300 hover:decoration-stone-700 hover:ease-in ease-out transition duration-150">Datenschutzerklärung</a>
+    </p>
+</footer>
+</body>
+</html>

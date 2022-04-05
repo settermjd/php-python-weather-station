@@ -159,6 +159,42 @@ $app->get('/daily-summary[/{startDate}[/{endDate}]]', function (Request $request
     return new EmptyResponse();
 })->setName('daily-summary');
 
+$app->get('/about', function (Request $request, Response $response, array $args) {
+    return $this
+        ->get('view')
+        ->render($response, 'about.html.twig',);
+})->setName('about');
+
+$app->get('/disclaimer', function (Request $request, Response $response, array $args) {
+    return $this
+        ->get('view')
+        ->render($response, 'disclaimer.html.twig',);
+})->setName('disclaimer');
+
+$app->get('/impressum', function (Request $request, Response $response, array $args) {
+    return $this
+        ->get('view')
+        ->render($response, 'impressum.html.twig',);
+})->setName('impressum');
+
+$app->get('/datenschutzerklaerung', function (Request $request, Response $response, array $args) {
+    return $this
+        ->get('view')
+        ->render($response, 'datenschutzerklaerung.html.twig',);
+})->setName('datenschutzerklaerung');
+
+$app->get('/cookie-policy', function (Request $request, Response $response, array $args) {
+    return $this
+        ->get('view')
+        ->render($response, 'cookie.html.twig',);
+})->setName('cookie');
+
+$app->get('/privacy-policy', function (Request $request, Response $response, array $args) {
+    return $this
+        ->get('view')
+        ->render($response, 'privacy.html.twig',);
+})->setName('privacy');
+
 $app->map(['GET','POST'], '/[{startDate}[/{endDate}]]', function (Request $request, Response $response, array $args) {
     /** @var WeatherStation\Service\WeatherService $weatherService */
     $weatherService = $this->get(WeatherService::class);
