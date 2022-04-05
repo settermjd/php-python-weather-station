@@ -11,7 +11,8 @@
     "laminas/laminas-diactoros": "^2.8",
     "twilio/sdk": "^6.36",
     "sendgrid/sendgrid": "^7.11",
-    "vlucas/phpdotenv": "^5.4"
+    "vlucas/phpdotenv": "^5.4",
+    "laminas/laminas-paginator": "^2.12"
   },
   "autoload": {
     "psr-4": {
