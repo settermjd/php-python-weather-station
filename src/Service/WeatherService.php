@@ -65,11 +65,15 @@ class WeatherService
             );
         }
 
-        return $this
+        $results = $this
             ->adapter
             ->query(
                 $sqlString,
                 $this->adapter::QUERY_MODE_EXECUTE
             );
+
+        $results->buffer();
+
+        return $results;
     }
 }
