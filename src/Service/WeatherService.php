@@ -39,7 +39,7 @@ class WeatherService
         if ($startDate !== null && $endDate !== null) {
             $select->where(
                 new Between(
-                    "timestamp",
+                    new Expression("date(timestamp)"),
                     $startDate,
                     $endDate
                 )
@@ -47,7 +47,7 @@ class WeatherService
         } elseif ($startDate !== null) {
             $select->where(
                 new Expression(
-                    "timestamp = ?",
+                    "date(timestamp) = ?",
                     $startDate
                 )
             );
