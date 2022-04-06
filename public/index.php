@@ -211,19 +211,6 @@ $app->map(
     WeatherDataResultsController::class
 );
 
-    $paginator = new Paginator(new PaginatorIterator($weatherData));
-    return $this
-        ->get('view')
-        ->render(
-            $response,
-            'index.html.twig',
-            [
-                'items' => $paginator->getItemsByPage($pageNumber),
-                'total' => 10,
-                'current' => $pageNumber,
-                'url' => 'page'
-            ]
-        );
-});
+$app->post('/search[/{startDate}[/{endDate}]]', WeatherDataSearchController::class);
 
 $app->run();
