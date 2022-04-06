@@ -12,11 +12,23 @@
     "twilio/sdk": "^6.36",
     "sendgrid/sendgrid": "^7.11",
     "vlucas/phpdotenv": "^5.4",
-    "laminas/laminas-paginator": "^2.12"
+    "laminas/laminas-paginator": "^2.12",
+    "laminas/laminas-validator": "^2.17"
   },
   "autoload": {
     "psr-4": {
       "WeatherStation\\": "src/"
     }
+  },
+  "require-dev": {
+    "codeception/codeception": "5.0.0-RC1",
+    "codeception/module-asserts": "^3.0",
+    "codeception/lib-asserts": "^2.0",
+    "codeception/stub": "^4.0",
+    "codeception/module-phpbrowser": "^3.0",
+    "pestphp/pest": "^1.21",
+    "pestphp/pest-plugin-faker": "^1.0",
+    "pestphp/pest-plugin-mock": "^1.0",
+    "pestphp/pest-plugin-expectations": "^1.6"
   }
 }

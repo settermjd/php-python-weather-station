@@ -9,8 +9,6 @@ use Laminas\Db\ResultSet\ResultSetInterface;
 use Laminas\Diactoros\Response\EmptyResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Stream;
-use Laminas\Paginator\Adapter\Iterator as PaginatorIterator;
-use Laminas\Paginator\Paginator;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,6 +21,8 @@ use Slim\Factory\AppFactory;
 use Slim\Views\{Twig,TwigMiddleware};
 use Twig\Extra\Intl\IntlExtension;
 use Twilio\Rest\Client;
+use WeatherStation\Controller\WeatherDataResultsController;
+use WeatherStation\Controller\WeatherDataSearchController;
 use WeatherStation\Service\WeatherService;
 
 require __DIR__ . '/../vendor/autoload.php';
@@ -66,6 +66,14 @@ $container->set(LoggerInterface::class, function(ContainerInterface $container):
     $logger->pushHandler($stream);
 
     return $logger;
+});
+
+$container->set(WeatherDataResultsController::class, function (ContainerInterface $container) {
+    return new WeatherDataResultsController(
+        $container->get('view'),
+        $container->get(WeatherService::class),
+        $container->get(LoggerInterface::class)
+    );
 });
 
 AppFactory::setContainer($container);
@@ -197,47 +205,12 @@ $app->get('/privacy-policy', function (Request $request, Response $response, arr
         ->render($response, 'privacy.html.twig',);
 })->setName('privacy');
 
-$app->map(['GET','POST'], '/[page{pageNumber:\d+}[/]]', function (Request $request, Response $response, array $args) {
-    /** @var WeatherStation\Service\WeatherService $weatherService */
-    $weatherService = $this->get(WeatherService::class);
-    $startDate = $request->getAttribute('startDate');
-    $endDate = $request->getAttribute('endDate');
-    $pageNumber = $request->getAttribute('pageNumber', 1);
+$app->map(
+    ['GET','POST'],
+    '/[page{pageNumber:\d+}/[{startDate}/[{endDate}/]]]',
+    WeatherDataResultsController::class
+);
 
-    $this->get(LoggerInterface::class)
-        ->debug(
-            'Requested data',
-            [
-                'start date' => $startDate ?? 'not supplied',
-                'end date' => $endDate ?? 'not supplied'
-            ]
-        );
-
-    $weatherData = $weatherService->getWeatherData($startDate, $endDate);
-
-    if ($request->hasHeader("content-type") && $request->getHeaderLine("content-type") === 'text/csv') {
-        $csvFileFromWeatherData = createCsvFileFromWeatherData($weatherData);
-        return new JsonResponse(
-            [
-                'data' => $csvFileFromWeatherData->getContents(),
-                'size' => $csvFileFromWeatherData->getSize(),
-            ]
-        );
-    }
-
-    $paginator = new Paginator(new PaginatorIterator($weatherData));
-    return $this
-        ->get('view')
-        ->render(
-            $response,
-            'index.html.twig',
-            [
-                'items' => $paginator->getItemsByPage($pageNumber),
-                'total' => 10,
-                'current' => $pageNumber,
-                'url' => 'page'
-            ]
-        );
-});
+$app->post('/search[/{startDate}[/{endDate}]]', WeatherDataSearchController::class);
 
 $app->run();

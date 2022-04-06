@@ -84,7 +84,7 @@
     }
 
     .pagination {
-        @apply mt-8 mx-auto w-4/5 content-center items-center place-content-center;
+        @apply mt-12 mx-auto w-4/5 content-center items-center place-content-center;
     }
 
     .pagination ul {
@@ -93,6 +93,10 @@
 
     .pagination ul a {
         @apply no-underline hover:underline;
+    }
+
+    .pagination ul li.active a span {
+        @apply ring ring-slate-400 ring-offset-2 drop-shadow-md;
     }
 
     .pagination .page-numbers {
