@@ -25,6 +25,11 @@ class WeatherService
         $this->logger = $logger;
     }
 
+    public function isSet(): bool
+    {
+        return true;
+    }
+
     /**
      * @return ResultSet|ResultSetInterface
      * @throws \Exception

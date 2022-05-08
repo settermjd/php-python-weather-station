@@ -7,7 +7,6 @@ use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\ResultSet\ResultSetInterface;
 use Laminas\Diactoros\Response\EmptyResponse;
-use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\Diactoros\Stream;
 use Monolog\Logger;
 use Psr\Container\ContainerInterface;
