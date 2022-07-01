@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace WeatherStation\Service;
 
-use Laminas\Db\{
-    Adapter\Adapter,
-    ResultSet\ResultSet,
-    ResultSet\ResultSetInterface,
-    Sql\Predicate\Between,
-    Sql\Predicate\Expression,
-    Sql\Sql
-};
+use Exception;
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\Driver\StatementInterface;
+use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Db\Sql\Predicate\Between;
+use Laminas\Db\Sql\Predicate\Expression;
+use Laminas\Db\Sql\Sql;
 use Psr\Log\LoggerInterface;
 
 class WeatherService
@@ -22,16 +21,15 @@ class WeatherService
     public function __construct(Adapter $adapter, ?LoggerInterface $logger = null)
     {
         $this->adapter = $adapter;
-        $this->logger = $logger;
+        $this->logger  = $logger;
     }
 
     /**
-     * @return ResultSet|ResultSetInterface
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getWeatherData(?string $startDate, ?string $endDate = null)
+    public function getWeatherData(?string $startDate, ?string $endDate = null): StatementInterface|ResultSet
     {
-        $sql = new Sql($this->adapter, 'weather_data');
+        $sql    = new Sql($this->adapter, 'weather_data');
         $select = $sql
             ->select()
             ->columns(['humidity', 'temperature', 'timestamp']);
@@ -55,15 +53,13 @@ class WeatherService
 
         $sqlString = $sql->buildSqlString($select);
 
-        if ($this->logger !== null) {
-            $this->logger->debug(
-                $sqlString,
-                [
-                    'start date' => $startDate,
-                    'end date' => $endDate,
-                ]
-            );
-        }
+        $this->logger?->debug(
+            $sqlString,
+            [
+                'start date' => $startDate,
+                'end date'   => $endDate,
+            ]
+        );
 
         return $this
             ->adapter
