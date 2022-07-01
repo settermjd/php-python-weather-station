@@ -18,5 +18,8 @@
     "psr-4": {
       "WeatherStation\\": "src/"
     }
+  },
+  "require-dev": {
+    "vimeo/psalm": "^4.24"
   }
 }
