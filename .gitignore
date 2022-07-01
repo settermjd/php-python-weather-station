@@ -2,3 +2,6 @@
 vendor
 .idea
 node_modules
+
+# Ignore PHP CS' cache file
+.phpcs-cache

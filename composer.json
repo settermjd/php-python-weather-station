@@ -20,12 +20,23 @@
     }
   },
   "require-dev": {
-    "vimeo/psalm": "^4.24"
+    "vimeo/psalm": "^4.24",
+    "friendsofphp/php-cs-fixer": "^3.8",
+    "laminas/laminas-coding-standard": "^2.3"
   },
   "scripts": {
     "psalm": "psalm",
     "check": [
-      "@psalm"
-    ]
+      "@psalm",
+      "@cs-check"
+    ],
+    "cs-check": "phpcs",
+    "cs-fix": "phpcbf",
+    "serve": "php -S 0.0.0.0:8080 -t public/"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }
