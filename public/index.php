@@ -5,6 +5,7 @@ declare(strict_types=1);
 use DI\Container;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Sql;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\{
     ResponseInterface as Response,
     ServerRequestInterface as Request
@@ -12,6 +13,7 @@ use Psr\Http\Message\{
 use Slim\Factory\AppFactory;
 use Slim\Views\{Twig,TwigMiddleware};
 use Twig\Extra\Intl\IntlExtension;
+use WeatherStation\Service\WeatherService;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -34,6 +36,19 @@ $container->set('weatherData', function() {
     return $dbAdapter->query(
         $sql->buildSqlString($select),
         $dbAdapter::QUERY_MODE_EXECUTE
+    );
+});
+
+$container->set('dbAdapter', function() {
+    return new Adapter([
+        'driver' => 'Pdo_Sqlite',
+        'database' => __DIR__ . '/../data/database/weather_station.sqlite'
+    ]);
+});
+
+$container->set(WeatherService::class, function(ContainerInterface $container) {
+    return new WeatherStation\Service\WeatherService(
+        $container->get('dbAdapter')
     );
 });
 
