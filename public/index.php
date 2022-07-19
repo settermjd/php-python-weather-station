@@ -26,7 +26,7 @@ $container->set('view', function() {
 $container->set('weatherData', function() {
     $dbAdapter = new Adapter([
         'driver' => 'Pdo_Sqlite',
-        'database' => __DIR__ . '/../data/database/weather_station_test_data.sqlite'
+        'database' => __DIR__ . '/../data/database/weather_station.sqlite'
     ]);
     $sql = new Sql($dbAdapter, 'weather_data');
     $select = $sql
